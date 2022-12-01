@@ -1,6 +1,6 @@
 import csv
 from datetime import datetime
-from src.swen344_db_utils import *
+from swen344_db_utils import *
 
 def rebuild_tables():
     drop_sql = """

@@ -30,3 +30,8 @@ class TestRest(unittest.TestCase):
         actual = get_rest_call(self, 'http://localhost:5000/users')
         self.assertEqual(expected, actual)
         self.assertEqual(4, actual.__len__())
+
+    def test_get_all_books(self):
+        expected = 10   # total number of books
+        actual = get_rest_call(self, 'http://localhost:5000/books')
+        self.assertEqual(expected, actual.__len__())

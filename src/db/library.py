@@ -143,6 +143,34 @@ def get_book_copies(library_id, book_id):
         {'library_id': library_id, 'book_id': book_id})
 
 '''
+Returns the library names that have the book in their inventory.
+Parameter:
+    book_id(int): A book's id.
+Returns:
+    (str): A string format of all the libraries.
+'''
+def get_libraries_with_book(book_id):
+    libraries = exec_get_all("""
+        SELECT libraries.library_name
+        FROM library_stock
+        INNER JOIN libraries ON libraries.library_id = library_stock.library_id
+        WHERE book_id = %(book_id)s""",
+        {'book_id': book_id})
+
+    string = ''
+    index = 0
+    for library in libraries:
+        if (index == 0):
+            string = library[0]
+            index += 1
+
+        elif (index < libraries.__len__()):
+            string = string + ', ' + library[0]
+            index += 1
+
+    return string
+
+'''
 Returns the corresponding book id given the book title.
 Parameter:
     title(str): A book title.

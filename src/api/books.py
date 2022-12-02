@@ -2,9 +2,7 @@ from flask_restful import Resource
 from db import library, swen344_db_utils
 
 class Books(Resource):
-    def get(self):
-        books = library.get_all_books()
-        
+    def print_books(books):
         final = {}
         book_dict = {}
         temp_dict = {}
@@ -25,5 +23,22 @@ class Books(Resource):
             book_dict = {id: temp_dict}
 
             final.update(book_dict)
-
+        
         return final
+
+    def get(self):
+        books = library.get_all_books()
+        output = Books.print_books(books)
+        return output
+
+class SearchFictionBooks(Resource):
+    def get(self):
+        books = library.get_fiction_books()
+        output = Books.print_books(books)
+        return output
+
+class SearchNonfictionBooks(Resource):
+    def get(self):
+        books = library.get_nonfiction_books()
+        output = Books.print_books(books)
+        return output

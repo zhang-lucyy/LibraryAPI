@@ -75,7 +75,7 @@ INSERT INTO inventory(title, book_type, author, publish_date, summary, copies) V
     ('The Dead Romantics', 'Fiction', 'Ashley Poston', 2022,
         'The main character is a ghostwriter for a romance novelist', 6),
     ('The Lord of the Rings', 'Fiction', 'J.R.R. Tolkien', 1954, 
-        'A group of heroes set forth to save their world', 0),
+        'A group of heroes set forth to save their world', 1),
     ('The Lightning Thief', 'Fiction', 'Rick Riordan', 2005, 
         'A 12 year-old boy who learns that his true father is Poseidon', 4),
     ('To Kill a Mockingbird', 'Fiction', 'Harper Lee', 1960,
@@ -83,7 +83,7 @@ INSERT INTO inventory(title, book_type, author, publish_date, summary, copies) V
     ('Frankenstein', 'Fiction', 'Mary Shelley', 1818,
         'A young scientist who creates a sapient creature in an scientific experiment', 1),
     ('The Winds of Winter', 'Fiction', 'George R.R. Martin', 2023,
-        'Sixth novel in the epic fantasy series "A Song of Ice and Fire"', 4);
+        "Sixth novel in the epic fantasy series 'A Song of Ice and Fire'", 4);
 
 INSERT INTO libraries(library_name) VALUES
     ('Penfield'),
@@ -93,7 +93,7 @@ INSERT INTO libraries(library_name) VALUES
 
 INSERT INTO library_stock(library_id, book_id, book_copies) VALUES
     --Penfield
-    (1, 1, 2),
+    (1, 1, 4),
     (1, 3, 1),
     (1, 4, 1),
     (1, 5, 2),
@@ -102,7 +102,6 @@ INSERT INTO library_stock(library_id, book_id, book_copies) VALUES
     (1, 10, 1),
 
     --Fairport
-    (2, 1, 1),
     (2, 2, 1),
     (2, 3, 3),
     (2, 4, 1),
@@ -116,16 +115,15 @@ INSERT INTO library_stock(library_id, book_id, book_copies) VALUES
     (3, 2, 1),
     (3, 3, 2),
     (3, 5, 1),
-    (3, 7, 1),
+    (3, 7, 2),
     (3, 8, 1),
     (3, 10, 1),
 
     --Pittsford
-    (4, 1, 1),
     (4, 2, 1),
     (4, 3, 1),
     (4, 5, 1),
-    (4, 7, 1),
+    (4, 9, 1),
     (4, 10, 1);
 
 INSERT INTO checkout(library_id, book_id, user_id, check_out_date, due_date, return_date) VALUES

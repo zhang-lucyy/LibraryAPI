@@ -1,13 +1,13 @@
 import csv
 from datetime import datetime
-from swen344_db_utils import *
+from .swen344_db_utils import *
 
 def rebuild_tables():
     drop_sql = """
         DROP SCHEMA IF EXISTS library CASCADE;
     """
     exec_commit(drop_sql)
-    exec_sql_file('db-lz3744/src/library_schema.sql')
+    exec_sql_file('src/db/library_schema.sql')
 
 '''
 Returns all of the users in the system.

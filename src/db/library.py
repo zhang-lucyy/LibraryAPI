@@ -15,7 +15,7 @@ Returns:
     (list): A list of users (tuples)
 '''
 def get_all_users():
-    return exec_get_all("SELECT id, name FROM users ORDER BY id ASC")
+    return exec_get_all("SELECT * FROM users ORDER BY id ASC")
 
 '''
 Returns a user's id given their name.

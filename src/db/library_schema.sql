@@ -83,7 +83,7 @@ INSERT INTO inventory(title, book_type, author, publish_date, summary, copies) V
     ('Frankenstein', 'Fiction', 'Mary Shelley', 1818,
         'A young scientist who creates a sapient creature in an scientific experiment', 1),
     ('The Winds of Winter', 'Fiction', 'George R.R. Martin', 2023,
-        "Sixth novel in the epic fantasy series 'A Song of Ice and Fire'", 4);
+        'Sixth novel in the epic fantasy series A Song of Ice and Fire', 4);
 
 INSERT INTO libraries(library_name) VALUES
     ('Penfield'),

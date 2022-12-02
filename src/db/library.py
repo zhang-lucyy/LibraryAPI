@@ -85,8 +85,8 @@ Returns:
 '''
 def get_nonfiction_books():
     return exec_get_all("""
-        SELECT inventory.title, inventory.book_type, inventory.author, inventory.copies 
-        FROM inventory WHERE inventory.book_type = 'Non-fiction'
+        SELECT * FROM inventory
+        WHERE inventory.book_type = 'Non-fiction'
     """)
 
 '''
@@ -96,8 +96,8 @@ Returns:
 '''
 def get_fiction_books():
     return exec_get_all("""
-        SELECT inventory.title, inventory.book_type, inventory.author, inventory.copies 
-        FROM inventory WHERE inventory.book_type = 'Fiction'
+        SELECT * FROM inventory
+        WHERE inventory.book_type = 'Fiction'
     """)
 
 '''

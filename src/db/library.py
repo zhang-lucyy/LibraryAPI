@@ -109,9 +109,8 @@ Returns:
 '''
 def search_by_author(author):
     return exec_get_all("""
-        SELECT inventory.title, inventory.book_type, inventory.author, 
-        inventory.publish_date, inventory.copies FROM inventory 
-        WHERE inventory.author = %(author)s""", {'author': author})[0]
+        SELECT * FROM inventory 
+        WHERE inventory.author = %(author)s""", {'author': author})
 
 '''
 Returns all of the books in the inventory that match the given title.
@@ -122,9 +121,45 @@ Returns:
 '''
 def search_by_title(title):
     return exec_get_all("""
-        SELECT inventory.title, inventory.book_type, inventory.author, 
-        inventory.publish_date, inventory.copies FROM inventory 
+        SELECT * FROM inventory 
         WHERE inventory.title = %(title)s""", {'title': title})
+
+'''
+Returns all books that matches multiple search terms.
+Parameters:
+    type(str): First search term, either fiction or non-fiction.
+    string(str): Second search term, either a title or author.
+Returns:
+    (list): A list of books that matches the search terms.
+'''
+def search_by_multiple_terms(type, string):
+    if (type == 'fiction'):
+        if(search_by_author(string) != None):
+            return exec_get_all("""
+                SELECT * FROM inventory
+                WHERE inventory.author = %(author)s
+                AND inventory.book_type = 'Fiction'""",
+                {'author': string})
+        elif(search_by_title(string) != None):
+            return exec_get_all("""
+                SELECT * FROM inventory
+                WHERE inventory.title = %(title)s
+                AND inventory.book_type = 'Fiction'""",
+                {'title': string})
+
+    elif (type == 'non-fiction'):
+        if(search_by_author(string) != None):
+            return exec_get_all("""
+                SELECT * FROM inventory
+                WHERE inventory.author = %(author)s
+                AND inventory.book_type = 'Non-fiction'""",
+                {'author': string})
+        elif(search_by_title(string) != None):
+            return exec_get_all("""
+                SELECT * FROM inventory
+                WHERE inventory.title = %(title)s
+                AND inventory.book_type = 'Non-fiction'""",
+                {'title': string})
 
 '''
 Returns the number of book copies at the specified library given

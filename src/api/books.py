@@ -35,17 +35,38 @@ class Books(Resource):
         output = Books.format_books(books)
         return output
 
-class SearchBooks(Resource):
+class SearchBooksSingleTerm(Resource):
     def get(self, type):
-        parse_type = type.split('/')
-        
-        for i in parse_type:
-            if (i == 'fiction'):
-                books = library.get_fiction_books()
+        if (type == 'fiction'):
+            books = library.get_fiction_books()
+            output = Books.format_books(books)
+            return output
+
+        elif (type == 'non-fiction'):
+            books = library.get_nonfiction_books()
+            output = Books.format_books(books)
+            return output
+
+        else:
+            if (library.search_by_title(type).__len__() != 0):
+                books = library.search_by_title(type)
                 output = Books.format_books(books)
                 return output
-                
-            elif (i == 'non-fiction'):
-                books = library.get_nonfiction_books()
+            elif (library.search_by_author(type).__len__() != 0):
+                books = library.search_by_author(type)
                 output = Books.format_books(books)
                 return output
+            else:
+                output = []
+                return output
+
+class SearchBooksMultipleTerms(Resource):
+    def get(self, type, string):
+        books = library.search_by_multiple_terms(type, string)
+        if (books.__len__() != 0):
+            output = Books.format_books(books)
+            return output
+
+        else:
+            output = []
+            return output

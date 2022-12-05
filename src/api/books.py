@@ -1,8 +1,12 @@
+from urllib.parse import parse_qs, urlparse
 from flask_restful import Resource
 from db import library, swen344_db_utils
 
 class Books(Resource):
-    def print_books(books):
+    '''
+    Helper method that returns the passed in books in a neat format.
+    '''
+    def format_books(books):
         final = {}
         book_dict = {}
         temp_dict = {}
@@ -28,17 +32,20 @@ class Books(Resource):
 
     def get(self):
         books = library.get_all_books()
-        output = Books.print_books(books)
+        output = Books.format_books(books)
         return output
 
-class SearchFictionBooks(Resource):
-    def get(self):
-        books = library.get_fiction_books()
-        output = Books.print_books(books)
-        return output
-
-class SearchNonfictionBooks(Resource):
-    def get(self):
-        books = library.get_nonfiction_books()
-        output = Books.print_books(books)
-        return output
+class SearchBooks(Resource):
+    def get(self, type):
+        parse_type = type.split('/')
+        
+        for i in parse_type:
+            if (i == 'fiction'):
+                books = library.get_fiction_books()
+                output = Books.format_books(books)
+                return output
+                
+            elif (i == 'non-fiction'):
+                books = library.get_nonfiction_books()
+                output = Books.format_books(books)
+                return output

@@ -234,6 +234,19 @@ def create_account(name, contact_info):
         {'name': name, 'contact_info': contact_info})
 
 '''
+Edits a user's contact information.
+Parameter:
+    user_id(int): A user id.
+    info(str): The updated contact info.
+'''
+def edit_account(user_id, info):
+    exec_commit("""
+        UPDATE users
+        SET contact_info = %(info)s
+        WHERE user_id = %(user_id)s""",
+        {'info': info, 'user_id': user_id})
+
+'''
 Deletes a user's account given their name.
 Parameter:
     name(str): The user's first and last name.

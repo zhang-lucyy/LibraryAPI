@@ -1,26 +1,32 @@
+import json
 from flask_restful import Resource, reqparse, request
 from db import library
 
-class Users(Resource):
-    def get(self):
-        users = library.get_all_users()
-
+class User(Resource):
+    def get(self, user_id):
         final = {}
-        user_dict = {}
+        checkout_list = {}
         temp_dict = {}
 
-        for user in users:
-            id = user[0]
-            name = user[1]
-            contact = user[2]
+        checkouts = library.get_user_books(user_id)
 
-            temp_dict = {'name': name, 'contact': contact}
-            user_dict = {id: temp_dict}
+        for book in checkouts:
+            book_id = book[0]
+            title = book[1]
+            author = book[2]
+            library_name = book[3]
+            checkout_date = json.dumps(book[4], default=str)
+            due_date = json.dumps(book[5], default=str)
+            return_date = json.dumps(book[6], default=str)
 
-            final.update(user_dict)
+            temp_dict = {'title': title, 'author': author, 'checked out at': library_name,
+                'checked out': checkout_date, 'due date': due_date, 'returned': return_date}
+            checkout_list = {book_id: temp_dict}
+
+            final.update(checkout_list)
 
         return final
-
+    
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('name', type = str)
@@ -46,3 +52,23 @@ class Users(Resource):
     def delete(self):
         name = request.args.get('name')
         library.delete_account(name)
+
+class Users(Resource):
+    def get(self):
+        users = library.get_all_users()
+
+        final = {}
+        user_dict = {}
+        temp_dict = {}
+
+        for user in users:
+            id = user[0]
+            name = user[1]
+            contact = user[2]
+
+            temp_dict = {'name': name, 'contact': contact}
+            user_dict = {id: temp_dict}
+
+            final.update(user_dict)
+
+        return final

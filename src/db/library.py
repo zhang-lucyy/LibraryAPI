@@ -1,5 +1,8 @@
 import csv
 from datetime import datetime
+import hashlib
+import secrets
+import string
 from .swen344_db_utils import *
 
 def rebuild_tables():
@@ -8,6 +11,41 @@ def rebuild_tables():
     """
     exec_commit(drop_sql)
     exec_sql_file('src/db/library_schema.sql')
+
+'''
+Checks to see if the username and password
+combination exists in the table. If so, it
+generates a secure session key and returns it.
+Parameters:
+    username(str): A user's username.
+    password(str): Hash digest of the password.
+Returns:
+    (str): A session key.
+'''
+def login(username, password):
+    user = exec_get_one("""
+        SELECT * FROM users
+        WHERE username = %(username)s
+        AND password = %(password)s""",
+        {'username': username, 'password': password})
+
+    if (user.__len__() == 1):
+        key = secrets.token_hex()
+        # saves the session key to the user's record
+        exec_commit("""
+            UPDATE users
+            SET session_key = %(key)s
+            WHERE username = %(username)s
+            AND password = %(password)s""",
+            {'username': username, 'password': password})
+
+        message = 'Login succssful'
+        return message, key
+
+    else:
+        #raise Exception("Failed login")
+        message = 'Login unsuccessful'
+        return message
 
 '''
 Returns all of the users in the system.
@@ -231,10 +269,13 @@ Parameters:
     name(str): The user's first and last name.
     contact_info(str): The user's email.
 '''
-def create_account(name, contact_info):
+def create_account(name, contact_info, username, password):
+    hashed = hashlib.sha512(string.encode(password)).hexdigest()
+    
     exec_commit("""
-        INSERT INTO users (name, contact_info) VALUES (%(name)s, %(contact_info)s)""",
-        {'name': name, 'contact_info': contact_info})
+        INSERT INTO users (name, contact_info, username, password)
+        VALUES (%(name)s, %(contact_info)s, %(username)s, %(password)s""",
+        {'name': name, 'contact_info': contact_info, 'username': username, 'password': hashed})
 
 '''
 Edits a user's contact information.

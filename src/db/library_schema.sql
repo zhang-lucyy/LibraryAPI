@@ -9,7 +9,10 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users(
     id SERIAL NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
-    contact_info TEXT NOT NULL
+    contact_info TEXT NOT NULL,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL,
+    session_key TEXT DEFAULT '' NOT NULL
 );
 
 CREATE TABLE inventory(
@@ -57,11 +60,11 @@ CREATE TABLE reserve(
     FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-INSERT INTO users(name, contact_info) VALUES
-    ('Ada Lovelace', 'ALovelace@gmail.com'),
-    ('Mary Shelley', 'MShelley@gmail.com'),
-    ('Jackie Gleason', 'JGleason@gmail.com'),
-    ('Art Garfunkel', 'AGarfunkel@gmail.com');
+INSERT INTO users(name, contact_info, username, password) VALUES
+    ('Ada Lovelace', 'ALovelace@gmail.com', 'lovelace12', '0dcb43ef8d91579b469220b749e282a8cabdb5688370237add3d7b19bc2aa9417a6bc3e84042601f306df1cd8680cd1f931b50dec474b5524487b945916bdf4c'),
+    --('Mary Shelley', 'MShelley@gmail.com', 'shelley60'),
+    ('Jackie Gleason', 'JGleason@gmail.com', 'gleason34', '0f20065bfc76b1ecfb8272326b07fae419cad56b9b80716e25132871977aa86e1cb5b562382c59b835a1be93dc2f5d8c89d8be26766bbbf08cd7f4b27784b0b7');
+    --('Art Garfunkel', 'AGarfunkel@gmail.com', 'garfunkel87');
 
 INSERT INTO inventory(title, book_type, author, publish_date, summary, copies) VALUES
     ('Figuring', 'Non-fiction', 'Maria Popova', 2019,
@@ -131,7 +134,7 @@ INSERT INTO checkout(library_id, book_id, user_id, check_out_date, due_date, ret
     (1, 2, 1, '2020-09-05', DEFAULT,'2020-09-07'),
     (3, 5, 1, '2020-09-08', '2020-09-22', DEFAULT),
     --Mary checked out "Scary Smart"
-    (3, 3, 2, '2020-09-08', DEFAULT, '2020-09-15'),
+    --(3, 3, 2, '2020-09-08', DEFAULT, '2020-09-15'),
     --Jackie checked out "The Lightning Thief" and "To Kill a Mockingbird"
     (4, 7, 3, '2020-09-10', DEFAULT, '2020-09-20'),
     (4, 8, 3, '2020-09-11', DEFAULT, '2020-09-24');

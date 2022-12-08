@@ -7,46 +7,27 @@ class TestRest(unittest.TestCase):
     def set_up(self):
         rebuild_tables()
 
-    def test_get_all_users(self):
-        expected = {
-            '1': {
-                'name': 'Ada Lovelace',
-                'contact': 'ALovelace@gmail.com'
-            },
-            '2': {
-                'name': 'Mary Shelley',
-                'contact': 'MShelley@gmail.com'
-            },
-            '3': {
-                'name': 'Jackie Gleason',
-                'contact': 'JGleason@gmail.com'
-            },
-            '4': {
-                'name': 'Art Garfunkel',
-                'contact': 'AGarfunkel@gmail.com'
-            }
-        }
-
+    def test01_get_all_users(self):
+        expected = 2
         actual = get_rest_call(self, 'http://localhost:5000/users')
-        self.assertEqual(expected, actual)
-        self.assertEqual(4, actual.__len__())
+        self.assertEqual(expected, actual.__len__())
 
-    def test_get_all_books(self):
+    def test02_get_all_books(self):
         expected = 10   # total number of books
         actual = get_rest_call(self, 'http://localhost:5000/books')
         self.assertEqual(expected, actual.__len__())
 
-    def test_get_fiction_books(self):
+    def test03_get_fiction_books(self):
         expected = 6
         actual = get_rest_call(self, 'http://localhost:5000/books/fiction')
         self.assertEqual(expected, actual.__len__())
 
-    def test_get_nonfiction_books(self):
+    def test04_get_nonfiction_books(self):
         expected = 4
         actual = get_rest_call(self, 'http://localhost:5000/books/non-fiction')
         self.assertEqual(expected, actual.__len__())
 
-    def test_search_by_author(self):
+    def test05_search_by_author(self):
         # single search term
         expected = {
             '8': {
@@ -66,7 +47,7 @@ class TestRest(unittest.TestCase):
         actual = get_rest_call(self, 'http://localhost:5000/books/Stephen King')
         self.assertEqual([], actual)
 
-    def test_search_by_title(self):
+    def test06_search_by_title(self):
         # single search term
         expected = {
             '7': {
@@ -86,7 +67,7 @@ class TestRest(unittest.TestCase):
         actual = get_rest_call(self, 'http://localhost:5000/books/Harry Potter')
         self.assertEqual([], actual)
 
-    def test_search_fiction_and_author(self):
+    def test07_search_fiction_and_author(self):
         # multiple search terms - fiction books by this author
         expected = {
             "5": {
@@ -106,7 +87,7 @@ class TestRest(unittest.TestCase):
         actual = get_rest_call(self, 'http://localhost:5000/books/fiction/Batman')
         self.assertEqual([], actual)
 
-    def test_search_nonfiction_and_title(self):
+    def test08_search_nonfiction_and_title(self):
         # multiple search terms - non-fiction books with this title
         expected = {
             "4": {
@@ -125,3 +106,5 @@ class TestRest(unittest.TestCase):
         # does not exist
         actual = get_rest_call(self, 'http://localhost:5000/books/non-fiction/Endgame')
         self.assertEqual([], actual)
+
+    

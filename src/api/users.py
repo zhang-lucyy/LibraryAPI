@@ -1,6 +1,25 @@
 import json
+import hashlib
+import string
 from flask_restful import Resource, reqparse, request
 from db import library
+
+class Login(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('username', type = str)
+        parser.add_argument('password', type = str)
+        args = parser.parse_args()
+
+        username = args['username']
+        password = args['password']
+
+        hashed = hashlib.sha512(string.encode(password)).hexdigest()
+
+        if (library.login(username, hashed).__len__() == 2):
+            message, key = library.login(username, hashed)
+        else:
+            message = library.login(username, hashed)
 
 class User(Resource):
     def get(self, user_id):

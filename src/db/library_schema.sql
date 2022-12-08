@@ -136,5 +136,5 @@ INSERT INTO checkout(library_id, book_id, user_id, check_out_date, due_date, ret
     --Mary checked out "Scary Smart"
     --(3, 3, 2, '2020-09-08', DEFAULT, '2020-09-15'),
     --Jackie checked out "The Lightning Thief" and "To Kill a Mockingbird"
-    (4, 7, 3, '2020-09-10', DEFAULT, '2020-09-20'),
-    (4, 8, 3, '2020-09-11', DEFAULT, '2020-09-24');
+    (4, 7, 2, '2020-09-10', DEFAULT, '2020-09-20'),
+    (4, 8, 2, '2020-09-11', DEFAULT, '2020-09-24');

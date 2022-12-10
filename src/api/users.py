@@ -5,6 +5,9 @@ from flask_restful import Resource, reqparse, request
 from db import library
 
 class Login(Resource):
+    '''
+    Login method.
+    '''
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('username', type = str)
@@ -18,10 +21,16 @@ class Login(Resource):
 
         if (library.login(username, hashed).__len__() == 2):
             message, key = library.login(username, hashed)
+            return message, key
+
         else:
             message = library.login(username, hashed)
+            return message
 
 class User(Resource):
+    '''
+    Gets user's checkouts.
+    '''
     def get(self, user_id):
         final = {}
         checkout_list = {}
@@ -46,33 +55,78 @@ class User(Resource):
 
         return final
     
+    '''
+    Creates a new account given name and contact info.
+    '''
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('name', type = str)
         parser.add_argument('contact_info', type = str)
+        parser.add_argument('username', type = str)
+        parser.add_argument('password', type = str)
+
         args = parser.parse_args()
 
         name = args['name']
         contact = args['contact_info']
+        username = args['username']
+        password = args['password']
 
-        library.create_account(name, contact)
+        message = library.create_account(name, contact, username, password)
+        return message
 
+    '''
+    Updates user info.
+    '''
     def put(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('user_id', type = int)
+        parser.add_argument('username', type = int)
         parser.add_argument('contact_info', type = str)
         args = parser.parse_args()
 
-        user_id = args['user_id']
+        username = args['username']
         contact = args['contact_info']
+        key = request.headers['session']
 
-        library.edit_account(user_id, contact)
+        message = library.edit_account(username, contact, key)
+        return message
 
+    '''
+    Deletes the account.
+    '''
     def delete(self):
-        name = request.args.get('name')
-        library.delete_account(name)
+        parser = reqparse.RequestParser()
+        parser.add.argument('username', type = str)
+        args = parser.parse.args()
+
+        username = args['username']
+        key = request.headers['session']
+
+        message = library.delete_account(username, key)
+        return message
+        
+class Checkout(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add.argument('library_id', type = int)
+        parser.add.argument('title', type = str)
+        parser.add.argument('username', type = int)
+        parser.add.argument('checkout_date', type = str)
+        args = parser.parse.args()
+
+        library_id = args['library_id']
+        title = args['title']
+        username = args['username']
+        checkout_date = args['checkout_date']
+        key = request.headers['session']
+
+        message = library.checkout_book(library_id, title, username, key, checkout_date)
+        return message
 
 class Users(Resource):
+    '''
+    Lists all users.
+    '''
     def get(self):
         users = library.get_all_users()
 

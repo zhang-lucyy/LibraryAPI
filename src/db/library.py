@@ -29,8 +29,8 @@ def login(username, password):
         AND password = %(password)s""",
         {'username': username, 'password': password})
 
-    if (user.__len__() == 1):
-        key = secrets.token_hex()
+    if (user.__len__() != None):
+        key = secrets.randbits(32)
         # saves the session key to the user's record
         exec_commit("""
             UPDATE users
@@ -39,13 +39,11 @@ def login(username, password):
             AND password = %(password)s""",
             {'username': username, 'password': password})
 
-        message = 'Login succssful'
+        message = 'Login succssful.'
         return message, key
 
     else:
-        #raise Exception("Failed login")
-        message = 'Login unsuccessful'
-        return message
+        return 'Login unsuccessful, incorrect password.'
 
 '''
 Returns all of the users in the system.
@@ -56,15 +54,14 @@ def get_all_users():
     return exec_get_all("SELECT * FROM users ORDER BY id ASC")
 
 '''
-Returns a user's id given their name.
+Returns a user's id given their username.
 Parameter: 
-    name(str): A user's first and last name. 
+    username(str): A username. 
 Returns:
     (int): A user's id number in the system.
 '''
-def get_user_id(name):
-    return exec_get_one("SELECT id FROM users WHERE users.name = %(name)s", {'name': name})[0]
-
+def get_user_id(username):
+    return exec_get_one("SELECT id FROM users WHERE username = %(name)s", {'name': username})[0]
 '''
 Returns a user's contact info given their user id.
 Parameter:
@@ -268,36 +265,85 @@ Creates a new account with the given name and contact info.
 Parameters:
     name(str): The user's first and last name.
     contact_info(str): The user's email.
+    username(str): Account login username.
+    password(str): A password to login.
+Returns:
+    (str): Message indicating success or not.
 '''
 def create_account(name, contact_info, username, password):
-    hashed = hashlib.sha512(string.encode(password)).hexdigest()
+    exists = exec_get_one("""
+        SELECT * FROM users
+        WHERE name = %(name)s
+        AND username = %(username)s""",
+        {'name': name, 'username': username})
+
+    if (exists == None):
+        hashed = hashlib.sha512(string.encode(password)).hexdigest()
     
-    exec_commit("""
-        INSERT INTO users (name, contact_info, username, password)
-        VALUES (%(name)s, %(contact_info)s, %(username)s, %(password)s""",
-        {'name': name, 'contact_info': contact_info, 'username': username, 'password': hashed})
+        exec_commit("""
+            INSERT INTO users (name, contact_info, username, password)
+            VALUES (%(name)s, %(contact_info)s, %(username)s, %(password)s""",
+            {'name': name, 'contact_info': contact_info, 'username': username, 'password': hashed})
+        
+        return 'Account created successfully.'
+
+    else:
+        return 'Request failed, cannot create account - user already exists.'
 
 '''
 Edits a user's contact information.
 Parameter:
-    user_id(int): A user id.
-    info(str): The updated contact info.
+    user_id(int): A username.
+    contact_info(str): The updated contact info.
+    key(int): A session key.
+Returns:
+    (str): A message indicating if account was updated
+    or not.
 '''
-def edit_account(user_id, info):
-    exec_commit("""
-        UPDATE users
-        SET contact_info = %(info)s
-        WHERE user_id = %(user_id)s""",
-        {'info': info, 'user_id': user_id})
+def edit_account(username, contact_info, key):
+    user = exec_get_one("""
+        SELECT * FROM users
+        WHERE username = %(username)s
+        AND session_key = %(key)s""",
+        {'username': username, 'key': key})
+
+    if (user != None):
+        exec_commit("""
+            UPDATE users
+            SET contact_info = %(info)s
+            WHERE username = %(username)s""",
+            {'info': contact_info, 'username': username})
+
+        return "User's account info updated successfully."
+    
+    else:
+        return 'Cannot update account info, user does not exist.'
 
 '''
 Deletes a user's account given their name.
 Parameter:
     name(str): The user's first and last name.
+Returns:
+    (str): A message indicating whether or not account was deleted.
 '''
-def delete_account(name):
-    exec_commit("""
-        DELETE FROM users WHERE users.name = %(name)s""", {'name': name})
+def delete_account(username, key):
+    user = exec_get_one("""
+        SELECT * FROM users
+        WHERE username = %(username)s
+        AND session_key = %(key)s""",
+        {'username': username, 'key': key})
+
+    if (user != None):
+        exec_commit("""
+            DELETE FROM users
+            WHERE username = %(username)s
+            AND session_key = %(key)s""",
+            {'username': username, 'key': key})
+
+        return 'Account successfully deleted.'
+
+    else:
+        return 'Cannot remove user, does not exist or wrong session key.'
 
 '''
 When books are checked out, they have a pre-assigned maximum lending
@@ -319,58 +365,66 @@ User checks out a book at a given library. If a user is overdue on a book,
 no further checkouts will be allowed.
 Parameter:
     library_id(int): A library id.
-    book_id(int): A book id.
-    user_id(int): A user id.
+    title(str): A book title.
+    username(str): A username.
+    key(int): Session key.
     check_out_date(str): The date the book is checked out.
 Returns:
     (tuple): Info regarding the checkout - date checked out, due date etc
 '''
-def checkout_book(library_id, book_id, user_id, check_out_date):
-    # check if there's any overdue books, if there are, user cannot make further checkouts
-    due_dates = exec_get_all("""
-        SELECT due_date FROM checkout
-        WHERE user_id = %(user_id)s
-        AND due_date IS NOT NULL""",
-        {'user_id': user_id})
+def checkout_book(library_id, title, username, key, check_out_date):
+    user = exec_get_one("""
+        SELECT * FROM users
+        WHERE username = %(username)s
+        AND session_key = %(key)s""",
+        {'username': username, 'key': key})
 
-    overdue = 0
-    for dates in due_dates:
-        if (datetime.strptime(check_out_date, '%Y-%m-%d').date() > dates[0]):
-            overdue += 1
-            break
-    
-    if (overdue == 1):
-        raise Exception("Cannot checkout book because user has an overdue book")
+    if (user != None):
+        user_id = get_user_id(username)
+
+        # check if there's any overdue books, if there are, user cannot make further checkouts
+        due_dates = exec_get_all("""
+            SELECT due_date FROM checkout
+            WHERE user_id = %(user_id)s
+            AND due_date IS NOT NULL""",
+            {'user_id': user_id})
+
+        overdue = 0
+        for dates in due_dates:
+            if (datetime.strptime(check_out_date, '%Y-%m-%d').date() > dates[0]):
+                overdue += 1
+                break
+        
+        if (overdue == 1):
+            raise Exception("Cannot checkout book because user has an overdue book")
+
+        else:
+            book_id = get_book_id(title)
+
+            # updates master inventory count
+            exec_commit("""
+                UPDATE inventory SET copies = (copies - 1)
+                WHERE book_id = %(book_id)s""", {'book_id': book_id})
+
+            # updates library inventory count
+            exec_commit("""
+                UPDATE library_stock SET book_copies = (book_copies - 1)
+                WHERE book_id = %(book_id)s
+                AND library_stock.library_id = %(library_id)s""",
+                {'book_id': book_id, 'library_id': library_id})
+
+            exec_commit("""
+                INSERT INTO checkout (library_id, book_id, user_id, check_out_date)
+                VALUES (%(library_id)s, %(book_id)s, %(user_id)s, %(check_out_date)s)""",
+                {'library_id': library_id, 'book_id': book_id, 'user_id': user_id, 'check_out_date': check_out_date})
+
+            # add maximum lending time of 2 weeks
+            add_due_date(user_id, book_id)
+
+            return title + ' successfully checked out.'
 
     else:
-        # updates master inventory count
-        exec_commit("""
-            UPDATE inventory SET copies = (copies - 1)
-            WHERE book_id = %(book_id)s""", {'book_id': book_id})
-
-        # updates library inventory count
-        exec_commit("""
-            UPDATE library_stock SET book_copies = (book_copies - 1)
-            WHERE book_id = %(book_id)s
-            AND library_stock.library_id = %(library_id)s""",
-            {'book_id': book_id, 'library_id': library_id})
-
-        exec_commit("""
-            INSERT INTO checkout (library_id, book_id, user_id, check_out_date)
-            VALUES (%(library_id)s, %(book_id)s, %(user_id)s, %(check_out_date)s)""",
-            {'library_id': library_id, 'book_id': book_id, 'user_id': user_id, 'check_out_date': check_out_date})
-
-        # add maximum lending time of 2 weeks
-        add_due_date(user_id, book_id)
-
-        # return
-        sql = exec_get_all("""
-            SELECT * FROM checkout
-            WHERE user_id = %(user_id)s
-            AND book_id = %(book_id)s""",
-            {'user_id': user_id, 'book_id': book_id})[0]
-
-        return sql
+        return 'No authentication, cannot checkout book.'
 
 '''
 User returns a book at a given library. Also calculates the late

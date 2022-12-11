@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Resource, Api
 from api.hello_world import HelloWorld
-from api.users import Login, User, Users
+from api.users import *
 from api.books import *
 
 app = Flask(__name__)

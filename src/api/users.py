@@ -3,9 +3,6 @@ from flask_restful import Resource, reqparse, request
 from db import library
 
 class Login(Resource):
-    '''
-    Login method.
-    '''
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('username', type = str)
@@ -24,9 +21,6 @@ class Login(Resource):
             return result
 
 class User(Resource):
-    '''
-    Gets user's checkouts.
-    '''
     def get(self):
         parser = reqparse.RequestParser()
         parser.add_argument('user_id', type = id)
@@ -56,9 +50,6 @@ class User(Resource):
 
         return final
     
-    '''
-    Creates a new account given name and contact info.
-    '''
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('name', type = str)
@@ -75,9 +66,6 @@ class User(Resource):
         message = library.create_account(name, contact, username, password)
         return message
 
-    '''
-    Updates user info.
-    '''
     def put(self):
         parser = reqparse.RequestParser()
         parser.add_argument('username', type = str)
@@ -91,9 +79,6 @@ class User(Resource):
         message = library.edit_account(username, contact, key)
         return message
 
-    '''
-    Deletes the account.
-    '''
     def delete(self):
         username = request.args.get('username')
         key = request.headers['session']
@@ -104,11 +89,11 @@ class User(Resource):
 class Checkout(Resource):
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add.argument('library_id', type = int)
-        parser.add.argument('title', type = str)
-        parser.add.argument('username', type = int)
-        parser.add.argument('checkout_date', type = str)
-        args = parser.parse.args()
+        parser.add_argument('library_id', type = int)
+        parser.add_argument('title', type = str)
+        parser.add_argument('username', type = str)
+        parser.add_argument('checkout_date', type = str)
+        args = parser.parse_args()
 
         library_id = args['library_id']
         title = args['title']
@@ -120,9 +105,6 @@ class Checkout(Resource):
         return message
 
 class Users(Resource):
-    '''
-    Lists all users.
-    '''
     def get(self):
         users = library.get_all_users()
 

@@ -80,7 +80,7 @@ class User(Resource):
     '''
     def put(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('username', type = int)
+        parser.add_argument('username', type = str)
         parser.add_argument('contact_info', type = str)
         args = parser.parse_args()
 
@@ -95,11 +95,7 @@ class User(Resource):
     Deletes the account.
     '''
     def delete(self):
-        parser = reqparse.RequestParser()
-        parser.add.argument('username', type = str)
-        args = parser.parse.args()
-
-        username = args['username']
+        username = request.args.get('username')
         key = request.headers['session']
 
         message = library.delete_account(username, key)

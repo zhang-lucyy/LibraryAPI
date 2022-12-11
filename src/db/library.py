@@ -41,7 +41,7 @@ def login(username, password):
             AND password = %(password)s""",
             {'key': key, 'username': username, 'password': hashed})
 
-        message = {'Login successful.': key}
+        message = {'Login successful.': str(key)}
         return message
 
     else:

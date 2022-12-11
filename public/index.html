@@ -37,9 +37,11 @@
 
   <script>
     function myFunction() {
-      document.getElementById("textarea").value = document.getElementsById("nutrition").value
+      document.getElementById("textarea").value = document.getElementsById("nutrition").value;
     }
-
+    function color(object) {
+      document.getElementById("textarea").style.color = object.value;
+    }
   </script>
 </head>
 
@@ -59,19 +61,19 @@
   </div>
 
   <div class = "colors radio">
-    <input type= "radio" name = "Color" value = "Black">
+    <input type= "radio" id = "black" name = "Color" value = "Black" onclick = "color(this)">
     <label for = "black">Black</label><br>
 
-    <input type= "radio" name = "Color"" value = "Red">
+    <input type= "radio" id = "Red" name = "Color"" value = "Red" onclick = "color(this)">
     <label for = "Red">Red</label><br>
 
-    <input type= "radio" name = "Color" value = "Green">
+    <input type= "radio" id = "Green" name = "Color" value = "Green" onclick = "color(this)">
     <label for = "Green">Green</label><br>
 
-    <input type= "radio" name = "Color" value = "Blue">
+    <input type= "radio" id = "Blue" name = "Color" value = "Blue" onclick = "color(this)">
     <label for = "Blue">Blue</label><br>
 
-    <input type= "radio" name = "Color" value = "Purple">
+    <input type= "radio" id = "Purple" name = "Color" value = "Purple" onclick = "color(this)">
     <label for = "Purple">Purple</label><br><br>
   </div>
 

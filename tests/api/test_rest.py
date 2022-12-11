@@ -205,3 +205,43 @@ class TestRest(unittest.TestCase):
 
         result = delete_rest_call(self, 'http://localhost:5000/user?username=gleason34', session)
         print('\nTest remove a user with a incorrect session key:', result)
+
+    def test18_list_all_books(self):
+        books = get_rest_call(self, 'http://localhost:5000/books')
+
+        print('\nTest list all books:')
+
+        for key in books:
+            print('\n', key, ':', books[key])
+
+    def test19_checkout_book(self):
+        body = {
+            "username": "gleason34",
+            "password": "pancakes"
+        }
+        login = post_rest_call(self, 'http://localhost:5000/login', body)
+        session = {
+            "session": login["Login successful."]
+        }
+
+        body = {
+            "library_id": 4,
+            "title": "Frankenstein",
+            "username": "gleason34",
+            "checkout_date": "2022-12-08"
+        }
+        result = post_rest_call(self, 'http://localhost:5000/checkout', body, session)
+        print('\nTest checkout book by title, authenticated user:', result)
+
+    def test20_checkout_book_fail(self):
+        session = {
+            "session": '123456'
+        }
+        body = {
+            "library_id": 3,
+            "title": "Figuring",
+            "username": "gleason34",
+            "checkout_date": "2022-12-10"
+        }
+        result = post_rest_call(self, 'http://localhost:5000/checkout', body, session)
+        print('\nTest checkout book by title, no authentication:', result)

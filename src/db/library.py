@@ -278,11 +278,11 @@ def create_account(name, contact_info, username, password):
         {'name': name, 'username': username})
 
     if (exists == None):
-        hashed = hashlib.sha512(string.encode(password)).hexdigest()
+        hashed = hashlib.sha512(password.encode()).hexdigest()
     
         exec_commit("""
             INSERT INTO users (name, contact_info, username, password)
-            VALUES (%(name)s, %(contact_info)s, %(username)s, %(password)s""",
+            VALUES (%(name)s, %(contact_info)s, %(username)s, %(password)s)""",
             {'name': name, 'contact_info': contact_info, 'username': username, 'password': hashed})
         
         return 'Account created successfully.'
@@ -379,52 +379,51 @@ def checkout_book(library_id, title, username, key, check_out_date):
         AND session_key = %(key)s""",
         {'username': username, 'key': key})
 
-    if (user != None):
-        user_id = get_user_id(username)
+    if (user == None):
+        return 'No authentication, cannot checkout book.'
 
-        # check if there's any overdue books, if there are, user cannot make further checkouts
-        due_dates = exec_get_all("""
-            SELECT due_date FROM checkout
-            WHERE user_id = %(user_id)s
-            AND due_date IS NOT NULL""",
-            {'user_id': user_id})
+    user_id = get_user_id(username)
 
-        overdue = 0
-        for dates in due_dates:
-            if (datetime.strptime(check_out_date, '%Y-%m-%d').date() > dates[0]):
-                overdue += 1
-                break
-        
-        if (overdue == 1):
-            raise Exception("Cannot checkout book because user has an overdue book")
+    # check if there's any overdue books, if there are, user cannot make further checkouts
+    due_dates = exec_get_all("""
+        SELECT due_date FROM checkout
+        WHERE user_id = %(user_id)s
+        AND due_date IS NOT NULL""",
+        {'user_id': user_id})
 
-        else:
-            book_id = get_book_id(title)
-
-            # updates master inventory count
-            exec_commit("""
-                UPDATE inventory SET copies = (copies - 1)
-                WHERE book_id = %(book_id)s""", {'book_id': book_id})
-
-            # updates library inventory count
-            exec_commit("""
-                UPDATE library_stock SET book_copies = (book_copies - 1)
-                WHERE book_id = %(book_id)s
-                AND library_stock.library_id = %(library_id)s""",
-                {'book_id': book_id, 'library_id': library_id})
-
-            exec_commit("""
-                INSERT INTO checkout (library_id, book_id, user_id, check_out_date)
-                VALUES (%(library_id)s, %(book_id)s, %(user_id)s, %(check_out_date)s)""",
-                {'library_id': library_id, 'book_id': book_id, 'user_id': user_id, 'check_out_date': check_out_date})
-
-            # add maximum lending time of 2 weeks
-            add_due_date(user_id, book_id)
-
-            return title + ' successfully checked out.'
+    overdue = 0
+    for dates in due_dates:
+        if (datetime.strptime(check_out_date, '%Y-%m-%d').date() > dates[0]):
+            overdue += 1
+            break
+    
+    if (overdue == 1):
+        raise Exception("Cannot checkout book because user has an overdue book")
 
     else:
-        return 'No authentication, cannot checkout book.'
+        book_id = get_book_id(title)
+
+        # updates master inventory count
+        exec_commit("""
+            UPDATE inventory SET copies = (copies - 1)
+            WHERE book_id = %(book_id)s""", {'book_id': book_id})
+
+        # updates library inventory count
+        exec_commit("""
+            UPDATE library_stock SET book_copies = (book_copies - 1)
+            WHERE book_id = %(book_id)s
+            AND library_stock.library_id = %(library_id)s""",
+            {'book_id': book_id, 'library_id': library_id})
+
+        exec_commit("""
+            INSERT INTO checkout (library_id, book_id, user_id, check_out_date)
+            VALUES (%(library_id)s, %(book_id)s, %(user_id)s, %(check_out_date)s)""",
+            {'library_id': library_id, 'book_id': book_id, 'user_id': user_id, 'check_out_date': check_out_date})
+
+        # add maximum lending time of 2 weeks
+        add_due_date(user_id, book_id)
+
+        return title + ' successfully checked out.'
 
 '''
 User returns a book at a given library. Also calculates the late

@@ -1,4 +1,4 @@
-iimage:
+image:
   name: node:12 #No special docker image.  Standard nodejs image from dockerhub
 cache:
   paths:

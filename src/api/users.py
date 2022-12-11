@@ -1,6 +1,4 @@
 import json
-import hashlib
-import string
 from flask_restful import Resource, reqparse, request
 from db import library
 
@@ -17,21 +15,24 @@ class Login(Resource):
         username = args['username']
         password = args['password']
 
-        hashed = hashlib.sha512(string.encode(password)).hexdigest()
-
-        if (library.login(username, hashed).__len__() == 2):
-            message, key = library.login(username, hashed)
-            return message, key
+        if (library.login(username, password).__len__() == 2):
+            result = library.login(username, password)
+            return result
 
         else:
-            message = library.login(username, hashed)
-            return message
+            result = library.login(username, password)
+            return result
 
 class User(Resource):
     '''
     Gets user's checkouts.
     '''
-    def get(self, user_id):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('user_id', type = id)
+        args = parser.parse_args()
+        user_id = args['user_id']
+
         final = {}
         checkout_list = {}
         temp_dict = {}
@@ -71,7 +72,6 @@ class User(Resource):
         contact = args['contact_info']
         username = args['username']
         password = args['password']
-
         message = library.create_account(name, contact, username, password)
         return message
 

@@ -61,7 +61,7 @@ CREATE TABLE reserve(
 );
 
 INSERT INTO users(name, contact_info, username, password) VALUES
-    ('Ada Lovelace', 'ALovelace@gmail.com', 'lovelace12', '0dcb43ef8d91579b469220b749e282a8cabdb5688370237add3d7b19bc2aa9417a6bc3e84042601f306df1cd8680cd1f931b50dec474b5524487b945916bdf4c'),
+    ('Ada Lovelace', 'ALovelace@gmail.com', 'lovelace12', 'b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86'),
     --('Mary Shelley', 'MShelley@gmail.com', 'shelley60'),
     ('Jackie Gleason', 'JGleason@gmail.com', 'gleason34', '0f20065bfc76b1ecfb8272326b07fae419cad56b9b80716e25132871977aa86e1cb5b562382c59b835a1be93dc2f5d8c89d8be26766bbbf08cd7f4b27784b0b7');
     --('Art Garfunkel', 'AGarfunkel@gmail.com', 'garfunkel87');

@@ -23,13 +23,15 @@ Returns:
     (str): A session key.
 '''
 def login(username, password):
+    hashed = hashlib.sha512(password.encode()).hexdigest()
+    
     user = exec_get_one("""
         SELECT * FROM users
         WHERE username = %(username)s
         AND password = %(password)s""",
-        {'username': username, 'password': password})
+        {'username': username, 'password': hashed})
 
-    if (user.__len__() != None):
+    if (user != None):
         key = secrets.randbits(32)
         # saves the session key to the user's record
         exec_commit("""
@@ -37,10 +39,10 @@ def login(username, password):
             SET session_key = %(key)s
             WHERE username = %(username)s
             AND password = %(password)s""",
-            {'username': username, 'password': password})
+            {'key': key, 'username': username, 'password': hashed})
 
-        message = 'Login succssful.'
-        return message, key
+        message = {'Login successful.': key}
+        return message
 
     else:
         return 'Login unsuccessful, incorrect password.'

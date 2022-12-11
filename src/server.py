@@ -9,7 +9,7 @@ api = Api(app)
 
 api.add_resource(HelloWorld, '/')
 api.add_resource(Login, '/login')
-api.add_resource(User, '/user/<user_id>')
+api.add_resource(User, '/user')
 api.add_resource(Users, '/users')
 api.add_resource(Books, '/books')
 api.add_resource(SearchBooksSingleTerm, '/books/<type>')

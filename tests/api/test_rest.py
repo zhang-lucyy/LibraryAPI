@@ -150,11 +150,58 @@ class TestRest(unittest.TestCase):
             "password": "password"
         }
         login = post_rest_call(self, 'http://localhost:5000/login', body)
-        key = login["Login successful."]
+        session = {
+            "session": login["Login successful."]
+        }
 
         body = {
             "username": "lovelace12",
             "contact_info": "lovelace@yahoo.com"
         }
-        result = put_rest_call(self, 'http://localhost:5000/user', body, key)
-        print('\nTest edit user info:', result)
+        result = put_rest_call(self, 'http://localhost:5000/user', body, session)
+        print('\nTest edit user info:', str(result))
+
+    def test14_edit_user_nonexistent(self):
+        body = {
+            "username": "zhang21",
+            "contact_info": "Lzhang@yahoo.com"
+        }
+        session = {
+            "session": "123456"
+        }
+        result = put_rest_call(self, 'http://localhost:5000/user', body, session)
+        print('\nTest edit non-existent user:', result)
+
+    def test15_remove_user(self):
+        body = {
+            "username": "lovelace12",
+            "password": "password"
+        }
+        login = post_rest_call(self, 'http://localhost:5000/login', body)
+        session = {
+            "session": login["Login successful."]
+        }
+
+        result = delete_rest_call(self, 'http://localhost:5000/user?username=lovelace12', session)
+        print('\nTest remove a user:', result)
+
+    def test16_remove_user_nonexistent(self):
+        session = {
+            "session": "123456"
+        }
+
+        result = delete_rest_call(self, 'http://localhost:5000/user?username=zhang21', session)
+        print('\nTest remove a non-existent user:', result)
+
+    def test17_remove_user_incorrect_key(self):
+        body = {
+            "username": "gleason34",
+            "password": "pancakes"
+        }
+        login = post_rest_call(self, 'http://localhost:5000/login', body)
+        session = {
+            "session": "123456"
+        }
+
+        result = delete_rest_call(self, 'http://localhost:5000/user?username=gleason34', session)
+        print('\nTest remove a user with a incorrect session key:', result)

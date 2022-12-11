@@ -107,4 +107,54 @@ class TestRest(unittest.TestCase):
         actual = get_rest_call(self, 'http://localhost:5000/books/non-fiction/Endgame')
         self.assertEqual([], actual)
 
-    
+    # REST2 TEST CASES
+    def test09_add_user(self):
+        body = {
+            "name": "John Adams",
+            "contact_info": "JAdams@gmail.com",
+            "username": "Adams12",
+            "password": "password"
+        }
+        result = post_rest_call(self, 'http://localhost:5000/user', body)
+        print('\nTest add a new user:', result)
+
+    def test10_add_user_fail(self):
+        body = {
+            "name": "Ada Lovelace",
+            "contact_info": "ALovelace@gmail.com",
+            "username": "lovelace12",
+            "password": "password"
+        }
+        result = post_rest_call(self, 'http://localhost:5000/user', body)
+        print('\nTest add a new user fails:', result)
+
+    def test11_login(self):
+        body = {
+            "username": "lovelace12",
+            "password": "password"
+        }
+        result = post_rest_call(self, 'http://localhost:5000/login', body)
+        print('\nTest login with right userId and password gives you a session key:', result)
+
+    def test12_login_fail(self):
+        body = {
+            "username": "lovelace12",
+            "password": "wrongPassword"
+        }
+        result = post_rest_call(self, 'http://localhost:5000/login', body)
+        print('\nTest login with incorrect password:', result)
+
+    def test13_edit_user(self):
+        body = {
+            "username": "lovelace12",
+            "password": "password"
+        }
+        login = post_rest_call(self, 'http://localhost:5000/login', body)
+        key = login["Login successful."]
+
+        body = {
+            "username": "lovelace12",
+            "contact_info": "lovelace@yahoo.com"
+        }
+        result = put_rest_call(self, 'http://localhost:5000/user', body, key)
+        print('\nTest edit user info:', result)

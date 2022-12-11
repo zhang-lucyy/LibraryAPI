@@ -11,18 +11,15 @@
     body {
       font-family: Segoe UI
     }
-
     h1 {
       font-family: Bold, Verdana;
       font-size: 36px;
       text-align: center;
     }
-
     h2 {
       font-family: Impact;
       text-align: center;
     }
-
     .nutrition {
       text-align: center;
     }
@@ -30,8 +27,20 @@
       display: inline-block;
       margin-left: 48%;
     }
-    
+    textarea {
+      resize: none;
+      width: 15%;
+      margin-left: 43%;
+      font-size: 15px
+    }
   </style>
+
+  <script>
+    function myFunction() {
+      document.getElementById("textarea").value = document.getElementsById("nutrition").value
+    }
+
+  </script>
 </head>
 
 <body>
@@ -39,7 +48,7 @@
   <h2>Section 03</h2>
 
   <div class = "dropdown nutrition">
-    <select name = "nutrition" id = "nutrition">
+    <select name = "nutrition" id = "nutrition" onchange = "myFunction()">
       <option value = "default"> </option>
       <option value = "Protein">Protein</option>
       <option value = "Carbs">Carbs</option>
@@ -63,9 +72,12 @@
     <label for = "Blue">Blue</label><br>
 
     <input type= "radio" name = "Color" value = "Purple">
-    <label for = "Purple">Purple</label><br>
+    <label for = "Purple">Purple</label><br><br>
+  </div>
+
+  <div class = "textbox">
+    <textarea name = "textarea" id = "textarea" rows = "4" columns = "40">Food Type...</textarea>
   </div>
 
 </body>
-
 </html>

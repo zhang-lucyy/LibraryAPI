@@ -1,5 +1,5 @@
 # RESTful API Project - Library
-Continuation from Library DB System project.
+Fall '22 - SWEN344 Web Engineering
 
 # Description
-Fall '22 class project for SWEN344, Web Engineering. A continuation of the Library Database System project, now using API calls to access the data. Created HTTP-based automated tests using Python and the Requests library.
+A continuation of the Library Database System project, now using API calls to access the data. Created HTTP-based automated tests using Python and the Requests library.
